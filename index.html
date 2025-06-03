@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Карточки Немецкий</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 40px; background: #f9f9f9; }
+        .card { border: 2px solid #333; border-radius: 10px; padding: 30px; background: #fff; margin: 20px auto; width: 300px; font-size: 22px; min-height: 100px; }
+        .controls { margin: 20px; }
+        button, select { padding: 10px 20px; margin: 10px; font-size: 18px; }
+    </style>
+</head>
+<body>
+    <h1>Карточки по немецкому</h1>
+    <div class="controls">
+        <label for="level">Уровень:</label>
+        <select id="level" onchange="changeLevel()">
+            <option value="A1">A1</option>
+            <option value="A2">A2</option>
+            <option value="B1">B1</option>
+            <option value="B2">B2</option>
+            <option value="C1">C1</option>
+            <option value="C2">C2</option>
+            <option value="MIXED">A1–C2</option>
+        </select>
+    </div>
+    <div class="card" id="cardFront"></div>
+    <div class="card" id="cardBack" style="display:none;"></div>
+    <div class="controls">
+        <button onclick="prevCard()">Назад</button>
+        <button onclick="flipCard()">🔁</button>
+        <button onclick="nextCard()">Дальше</button>
+    </div>
+
+    <script>
+        const cards = {
+            A1: [
+                { front: "der Mann", back: "Мужчина" },
+                { front: "die Frau", back: "Женщина" }
+            ],
+            A2: [
+                { front: "gehen<br><small>Ich gehe nach Hause.</small>", back: "Идти<br><small>Я иду домой</small>" },
+                { front: "lernen<br><small>Wir lernen Deutsch.</small>", back: "Учить<br><small>Мы учим немецкий</small>" }
+            ],
+            B1: [
+                { front: "verstehen", back: "Понимать" }
+            ],
+            B2: [
+                { front: "besprechen", back: "Обсуждать" }
+            ],
+            C1: [
+                { front: "entscheiden", back: "Решать" }
+            ],
+            C2: [
+                { front: "widersprechen", back: "Возражать" }
+            ]
+        };
+
+        let level = "A1";
+        let currentIndex = 0;
+        let showBack = false;
+
+        function getCurrentCards() {
+            if (level === "MIXED") {
+                return Object.values(cards).flat();
+            }
+            return cards[level] || [];
+        }
+
+        function renderCard() {
+            const currentCards = getCurrentCards();
+            if (currentCards.length === 0) return;
+            const card = currentCards[currentIndex];
+            document.getElementById("cardFront").innerHTML = card.front;
+            document.getElementById("cardBack").innerHTML = card.back;
+            document.getElementById("cardFront").style.display = showBack ? "none" : "block";
+            document.getElementById("cardBack").style.display = showBack ? "block" : "none";
+        }
+
+        function nextCard() {
+            const currentCards = getCurrentCards();
+            currentIndex = (currentIndex + 1) % currentCards.length;
+            showBack = false;
+            renderCard();
+        }
+
+        function prevCard() {
+            const currentCards = getCurrentCards();
+            currentIndex = (currentIndex - 1 + currentCards.length) % currentCards.length;
+            showBack = false;
+            renderCard();
+        }
+
+        function flipCard() {
+            showBack = !showBack;
+            renderCard();
+        }
+
+        function changeLevel() {
+            level = document.getElementById("level").value;
+            currentIndex = 0;
+            showBack = false;
+            renderCard();
+        }
+
+        renderCard();
+    </script>
+</body>
+</html>
